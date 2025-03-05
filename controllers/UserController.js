@@ -181,7 +181,6 @@ export const uploadPhoto = async (req, res) => {
     }
 
     try {
-      // Upload file to S3
       const buffer = await sharp(req.file.buffer).toBuffer();
       const imageName = `${userId}_${Date.now()}_${index}`;
 
@@ -201,7 +200,19 @@ export const uploadPhoto = async (req, res) => {
         user[photoField] = imageName;
         await user.save();
 
-        res.json({ message: 'Фото успешно загружено', user });
+        try {
+          const getObjectParams = {
+            Bucket: bucketName,
+            Key: imageName,
+          };
+          const command = new GetObjectCommand(getObjectParams);
+          const resPhotoUrl = await getSignedUrl(s3, command, {expiresIn: 3600});
+          res.json({ message: 'Фото успешно загружено', user, photoUrl: resPhotoUrl});
+        } catch (error) {
+          console.error("Ошибка при генерации ссылки:", error);
+          return res.status(500).json({ error: "Ошибка при генерации URL изображения" });
+        }
+
       } catch (saveError) {
         console.error('Ошибка при сохранении пользователя:', saveError);
         res.status(500).json({ error: 'Ошибка при обновлении данных пользователя' });
@@ -221,7 +232,6 @@ export const uploadPhoto = async (req, res) => {
 export const getUserById = async (req, res) => {
   try {
     const user = await User.findOne({ _id: req.body.userId });
-    
 
     if (!user) {
       return res.json({ message: "Пользователь не найден" });
