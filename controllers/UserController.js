@@ -29,23 +29,39 @@ const s3 = new S3Client({
 
 export const register = async (req, res) => {
   try {
-    const newUser = new User({
-      name: req.body.name,
-      birthDay: req.body.birthDay,
-      birthMonth: req.body.birthMonth,
-      birthYear: req.body.birthYear,
-      gender: req.body.gender,
-      height: req.body.height,
-      location: req.body.location,
-      wantToFind: req.body.wantToFind,
-      goal: req.body.goal,
-      telegramId: req.body.telegramId,
-      city: req.body.city
-    });
-
-    // Сохранение пользователя в базе данных
-    const savedUser = await newUser.save();
-
+    // const newUser = new User({
+    //   name: req.body.name,
+    //   birthDay: req.body.birthDay,
+    //   birthMonth: req.body.birthMonth,
+    //   birthYear: req.body.birthYear,
+    //   gender: req.body.gender,
+    //   height: req.body.height,
+    //   location: req.body.location,
+    //   wantToFind: req.body.wantToFind,
+    //   goal: req.body.goal,
+    //   telegramId: req.body.telegramId,
+    //   city: req.body.city
+    // });
+    //
+    // // Сохранение пользователя в базе данных
+    // const savedUser = await newUser.save();
+    //
+    const savedUser = await User.findOneAndUpdate(
+        { telegramId: req.body.telegramId }, // Поиск по telegramId
+        {
+          name: req.body.name,
+          birthDay: req.body.birthDay,
+          birthMonth: req.body.birthMonth,
+          birthYear: req.body.birthYear,
+          gender: req.body.gender,
+          height: req.body.height,
+          location: req.body.location,
+          wantToFind: req.body.wantToFind,
+          goal: req.body.goal,
+          city: req.body.city
+        },
+        { new: true, upsert: true } // new - возвращает обновленный объект, upsert - создает, если нет
+    );
     // Генерация токена
     const token = jwt.sign({ _id: savedUser._id }, 'secret123', { expiresIn: '30d' });
 
