@@ -188,9 +188,9 @@ export const uploadPhoto = async (req, res) => {
     const { userId } = req.query;
     const index = Number(req.query.index);
 
-    if (!mongoose.Types.ObjectId.isValid(userId) || !Number.isInteger(index) || index < 0 || index > 2) {
-      return res.status(400).json({ error: "Некорректные параметры" });
-    }
+    // if (!mongoose.Types.ObjectId.isValid(userId) || !Number.isInteger(index) || index < 0 || index > 2) {
+    //   return res.status(400).json({ error: "Некорректные параметры" });
+    // }
 
     if (!req.file) {
       return res.status(400).json({ error: "Файл не загружен" });
@@ -201,9 +201,9 @@ export const uploadPhoto = async (req, res) => {
       return res.status(404).json({ error: "Пользователь не найден" });
     }
 
-    if (!user.telegramId) {
-      return res.status(400).json({ error: "У пользователя отсутствует telegramId" });
-    }
+    // if (!user.telegramId) {
+    //   return res.status(400).json({ error: "У пользователя отсутствует telegramId" });
+    // }
 
     const buffer = await sharp(req.file.buffer).toBuffer();
     const imageName = `${userId}_${Date.now()}_${index}`;
