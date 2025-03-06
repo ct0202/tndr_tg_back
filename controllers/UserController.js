@@ -62,6 +62,7 @@ export const register = async (req, res) => {
         },
         { new: true, upsert: true } // new - возвращает обновленный объект, upsert - создает, если нет
     );
+    console.log(savedUser);
     // Генерация токена
     const token = jwt.sign({ _id: savedUser._id }, 'secret123', { expiresIn: '30d' });
 
