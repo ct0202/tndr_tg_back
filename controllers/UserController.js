@@ -185,6 +185,7 @@ export const updateUserInfo = async (req, res) => {
 
 export const uploadPhoto = async (req, res) => {
   try {
+    console.log("trying to upload photo...");
     const { userId } = req.query;
     const index = Number(req.query.index);
 
@@ -218,7 +219,7 @@ export const uploadPhoto = async (req, res) => {
     await s3.send(new PutObjectCommand(params));
 
     // Обновляем пользователя
-    const photoField = `photo${index + 1}`;
+    const photoField = `photo${index}`;
     user[photoField] = imageName;
     await user.save();
 
