@@ -17,7 +17,7 @@ const errorMsg = chalk.bgWhite.redBright;
 const successMsg = chalk.bgGreen.white;
 
 // Подключение к базе данных
-mongoose.connect('mongodb+srv://abeke:20060903@cluster0.vm8hy.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
+mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log(successMsg("DB ok")))
   .catch((err) => console.log(errorMsg("DB error:", err)));
 
