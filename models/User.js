@@ -31,7 +31,7 @@ const UserSchema = new mongoose.Schema({
     },
     likes: { type: [mongoose.Schema.Types.ObjectId], ref: 'User', default: [] },
     dislikes: { type: [mongoose.Schema.Types.ObjectId], ref: 'User', default: [] },
-    telegramId: { type: Number, unique: true, required: true },
+    telegramId: { type: Number, unique: true },
     likesReceived: { type: Number, default: 0 },
     dislikesReceived: { type: Number, default: 0 },
     profileViews: { type: Number, default: 0 },
