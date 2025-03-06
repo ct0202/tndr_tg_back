@@ -409,7 +409,7 @@ export const getTelegramId = async (req, res) => {
       telegramId: initData
     });
 
-    await newUser.save();
+    // await newUser.save();
 
     return res.json({ 
       status: 'Новый пользователь создан.', 
