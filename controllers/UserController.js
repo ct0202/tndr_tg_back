@@ -47,7 +47,7 @@ export const register = async (req, res) => {
     // const savedUser = await newUser.save();
     //
     const savedUser = await User.findOneAndUpdate(
-        { telegramId: req.body.telegramId, required: true}, // Поиск по telegramId
+        { telegramId: req.body.telegramId}, // Поиск по telegramId
         {
           name: req.body.name,
           birthDay: req.body.birthDay,
