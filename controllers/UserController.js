@@ -184,65 +184,55 @@ export const updateUserInfo = async (req, res) => {
 
 
 export const uploadPhoto = async (req, res) => {
-  const { userId } = req.query;
-  const index = parseInt(req.query.index, 10); // Determine which photo field to update
-
-  if (!mongoose.Types.ObjectId.isValid(userId) || isNaN(index) || index < 0 || index > 2) {
-    return res.status(400).json({ error: 'Некорректные параметры' });
-  }
-
   try {
+    const { userId } = req.query;
+    const index = Number(req.query.index);
+
+    if (!mongoose.Types.ObjectId.isValid(userId) || !Number.isInteger(index) || index < 0 || index > 2) {
+      return res.status(400).json({ error: "Некорректные параметры" });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({ error: "Файл не загружен" });
+    }
+
     const user = await User.findById(userId);
     if (!user) {
-      return res.status(404).json({ error: 'Пользователь не найден' });
+      return res.status(404).json({ error: "Пользователь не найден" });
     }
 
-    try {
-      const buffer = await sharp(req.file.buffer).toBuffer();
-      const imageName = `${userId}_${Date.now()}_${index}`;
-
-      const params = {
-        Bucket: bucketName,
-        Key: imageName,
-        Body: buffer,
-        ContentType: req.file.mimetype,
-      };
-
-      const command = new PutObjectCommand(params);
-      await s3.send(command);
-
-      try {
-        // Update the user's photo field
-        const photoField = `photo${index + 1}`; // photo1, photo2, photo3
-        user[photoField] = imageName;
-        await user.save();
-
-        try {
-          const getObjectParams = {
-            Bucket: bucketName,
-            Key: imageName,
-          };
-          const command = new GetObjectCommand(getObjectParams);
-          const resPhotoUrl = await getSignedUrl(s3, command, {expiresIn: 3600});
-          res.json({ message: 'Фото успешно загружено', user, photoUrl: resPhotoUrl});
-        } catch (error) {
-          console.error("Ошибка при генерации ссылки:", error);
-          return res.status(500).json({ error: "Ошибка при генерации URL изображения" });
-        }
-
-      } catch (saveError) {
-        console.error('Ошибка при сохранении пользователя:', saveError);
-        res.status(500).json({ error: 'Ошибка при обновлении данных пользователя' });
-      }
-    } catch (s3Error) {
-      console.error('Ошибка при загрузке в S3:', s3Error);
-      res.status(500).json({ error: 'Ошибка при загрузке фото в хранилище' });
+    if (!user.telegramId) {
+      return res.status(400).json({ error: "У пользователя отсутствует telegramId" });
     }
-  } catch (dbError) {
-    console.error('Ошибка при поиске пользователя:', dbError);
-    res.status(500).json({ error: 'Ошибка при получении данных пользователя' });
+
+    const buffer = await sharp(req.file.buffer).toBuffer();
+    const imageName = `${userId}_${Date.now()}_${index}`;
+
+    const params = {
+      Bucket: bucketName,
+      Key: imageName,
+      Body: buffer,
+      ContentType: req.file.mimetype,
+    };
+
+    await s3.send(new PutObjectCommand(params));
+
+    // Обновляем пользователя
+    const photoField = `photo${index + 1}`;
+    user[photoField] = imageName;
+    await user.save();
+
+    // Генерируем ссылку
+    const getObjectParams = { Bucket: bucketName, Key: imageName };
+    const resPhotoUrl = await getSignedUrl(s3, new GetObjectCommand(getObjectParams), { expiresIn: 3600 });
+
+    return res.json({ message: "Фото успешно загружено", user, photoUrl: resPhotoUrl });
+  } catch (error) {
+    console.error("Ошибка в uploadPhoto:", error);
+    return res.status(500).json({ error: "Внутренняя ошибка сервера" });
   }
 };
+
 
 
 
