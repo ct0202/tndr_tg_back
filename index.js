@@ -49,35 +49,53 @@ app.post('/getTelegramId', UserController.getTelegramId)
 app.post('/getLikedUsers', UserController.getLikedUsers)
 
 // 📌 WebSocket логика
-const users = {}; // Связь userId -> { socketId, online }
+const users = {}; // Связь userId -> socketId
 
 io.on("connection", (socket) => {
     console.log(`Пользователь подключен: ${socket.id}`);
 
+    // socket.on("joinChat", (userId) => {
+    //     users[userId] = socket.id;
+    //     console.log(`Пользователь ${userId} вошел в чат`);
+    // });
     socket.on("joinChat", async (userId) => {
         users[userId] = { socketId: socket.id, online: true };
 
+        // Обновляем в БД статус пользователя
         await User.findByIdAndUpdate(userId, { online: true, lastSeen: new Date() });
 
         io.emit("userStatus", { userId, online: true, lastSeen: null });
     });
 
-    socket.on("sendMessage", async ({ senderId, receiverId, message }) => {
-        const receiverSocketId = users[receiverId]?.socketId; // Исправлено!
 
+
+    socket.on("sendMessage", async ({ senderId, receiverId, message }) => {
+        const receiverSocketId = users[receiverId];
+
+        // Сохранение в базу данных
         const savedMessage = await ChatController.saveMessage(senderId, receiverId, message);
 
         if (receiverSocketId) {
             io.to(receiverSocketId).emit("receiveMessage", savedMessage);
         }
-        io.to(users[senderId]?.socketId).emit("receiveMessage", savedMessage); // Теперь отправитель тоже получает сообщение
     });
+
+    // socket.on("disconnect", () => {
+    //     console.log(`Пользователь ${socket.id} отключился`);
+    //     for (let userId in users) {
+    //         if (users[userId] === socket.id) {
+    //             delete users[userId];
+    //             break;
+    //         }
+    //     }
+    // });
 
     socket.on("disconnect", async () => {
         for (let userId in users) {
             if (users[userId].socketId === socket.id) {
                 delete users[userId];
 
+                // Сохраняем время выхода
                 const lastSeen = new Date();
                 await User.findByIdAndUpdate(userId, { online: false, lastSeen });
 
@@ -86,8 +104,9 @@ io.on("connection", (socket) => {
             }
         }
     });
-});
 
+
+});
 
 // Запуск сервера
 const port = process.env.PORT || 3001;
