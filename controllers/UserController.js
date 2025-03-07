@@ -220,11 +220,12 @@ export const uploadPhoto = async (req, res) => {
     await s3.send(new PutObjectCommand(params));
 
     // Обновляем пользователя
-    const photoField = `photo${index}`;
+    const photoField = `photo${index + 1}`;
     user[photoField] = imageName;
     console.log('saving photo for: ', user);
     console.log('photo field name => ', photoField);
-    const saved = await user.save();
+    const saved = await User.findByIdAndUpdate(userId, { [photoField]: imageName }, { new: true });
+    console.log('updated document => ', saved)
 
     // Генерируем ссылку
     const getObjectParams = { Bucket: bucketName, Key: imageName };
