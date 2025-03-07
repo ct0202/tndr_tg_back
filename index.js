@@ -78,6 +78,9 @@ io.on("connection", (socket) => {
         if (receiverSocketId) {
             io.to(receiverSocketId).emit("receiveMessage", savedMessage);
         }
+
+        socket.emit("messageSent", savedMessage);
+
     });
 
     // socket.on("disconnect", () => {
