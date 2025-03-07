@@ -199,6 +199,7 @@ export const uploadPhoto = async (req, res) => {
 
     const user = await User.findById(userId);
     if (!user) {
+      console.error("пользователь не найден");
       return res.status(404).json({ error: "Пользователь не найден" });
     }
 
@@ -221,7 +222,9 @@ export const uploadPhoto = async (req, res) => {
     // Обновляем пользователя
     const photoField = `photo${index}`;
     user[photoField] = imageName;
-    await user.save();
+    console.log('saving photo for: ', user);
+    console.log('photo field name => ', photoField);
+    const saved = await user.save();
 
     // Генерируем ссылку
     const getObjectParams = { Bucket: bucketName, Key: imageName };
