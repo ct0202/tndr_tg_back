@@ -224,8 +224,11 @@ export const uploadPhoto = async (req, res) => {
     user[photoField] = imageName;
     console.log('saving photo for: ', user);
     console.log('photo field name => ', photoField);
-    const saved = await User.findByIdAndUpdate(userId, { [photoField]: imageName }, { new: true });
-    console.log('updated document => ', saved)
+    const result = await User.updateOne(
+        { _id: userId },
+        { $set: { [photoField]: imageName } }
+    );
+    console.log('updated document => ', result);
 
     // Генерируем ссылку
     const getObjectParams = { Bucket: bucketName, Key: imageName };
