@@ -188,6 +188,7 @@ export const uploadPhoto = async (req, res) => {
     console.log("trying to upload photo...");
     const { userId } = req.query;
     const index = Number(req.query.index);
+    console.log(index);
 
     // if (!mongoose.Types.ObjectId.isValid(userId) || !Number.isInteger(index) || index < 0 || index > 2) {
     //   return res.status(400).json({ error: "Некорректные параметры" });
