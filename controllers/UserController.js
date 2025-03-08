@@ -185,7 +185,6 @@ export const updateUserInfo = async (req, res) => {
 
 export const uploadPhoto = async (req, res) => {
   try {
-    console.log("trying to upload photo...");
     const { userId } = req.query;
     const index = Number(req.query.index);
     console.log(index);
@@ -208,14 +207,15 @@ export const uploadPhoto = async (req, res) => {
     //   return res.status(400).json({ error: "У пользователя отсутствует telegramId" });
     // }
 
-    const buffer = await sharp(req.file.buffer).toBuffer();
+    const buffer = await sharp(req.file.buffer).toFormat("png").toBuffer();
     const imageName = `${userId}_${Date.now()}_${index}`;
 
     const params = {
       Bucket: bucketName,
       Key: imageName,
       Body: buffer,
-      ContentType: req.file.mimetype,
+      // ContentType: req.file.mimetype,
+      ContentType: "image/png",
     };
 
     await s3.send(new PutObjectCommand(params));
@@ -229,9 +229,7 @@ export const uploadPhoto = async (req, res) => {
         { _id: userId },
         { $set: { [photoField]: imageName } }
     );
-    console.log('updated document => ', result);
 
-    // Генерируем ссылку
     const getObjectParams = { Bucket: bucketName, Key: imageName };
     const resPhotoUrl = await getSignedUrl(s3, new GetObjectCommand(getObjectParams), { expiresIn: 3600 });
 
