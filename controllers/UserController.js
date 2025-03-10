@@ -454,11 +454,11 @@ export const reactToUser = async (req, res) => {
 
     let isMatch = false;
 
-    if (action === 'superlike'){
+    if (action === 'superlike') {
 
       //open chats
-      await User.findByIdAndUpdate(userId, { $addToSet: { chats: targetUserId } });
-      await User.findByIdAndUpdate(targetUserId, { $addToSet: { chats: userId } });
+      await User.findByIdAndUpdate(userId, {$addToSet: {chats: targetUserId}});
+      await User.findByIdAndUpdate(targetUserId, {$addToSet: {chats: userId}});
 
       if (!user.likes.includes(targetUserId)) {
 
@@ -479,17 +479,29 @@ export const reactToUser = async (req, res) => {
 
           const existingMatch = await Match.findOne({
             $or: [
-              { person1Id: userId, person2Id: targetUserId },
-              { person1Id: targetUserId, person2Id: userId }
+              {person1Id: userId, person2Id: targetUserId},
+              {person1Id: targetUserId, person2Id: userId}
             ]
           });
 
           if (!existingMatch) {
-            const match = new Match({ person1Id: userId, person2Id: targetUserId, status: "match" });
+            const match = new Match({person1Id: userId, person2Id: targetUserId, status: "match"});
             await match.save();
+
+            await User.findByIdAndUpdate(
+                userId,
+                {$pull: {likedBy: targetUserId, superlikedBy: targetUserId}}
+            );
+
+            await User.findByIdAndUpdate(
+                targetUserId,
+                {$pull: {likedBy: userId, superlikedBy: userId}}
+            );
+
           }
         }
 
+      }
     }
 
     if (action === 'like') {
@@ -538,7 +550,7 @@ export const reactToUser = async (req, res) => {
       message: `Вы ${action === 'like' ? 'лайкнули' : 'дизлайкнули'} пользователя`,
       isMatch,
     });
-  }} catch (err) {
+  } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Ошибка сервера' });
   }
