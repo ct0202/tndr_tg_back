@@ -447,6 +447,9 @@ export const reactToUser = async (req, res) => {
     const targetUser = await User.findById(targetUserId);
     const match = new Match({ person1Id: userId, person2Id: targetUserId });
 
+    const targetUserIdObj = mongoose.Types.ObjectId(targetUserId);
+    const userIdObj = mongoose.Types.ObjectId(userId);
+
 
     if (!user || !targetUser) {
       return res.status(404).json({ message: 'Пользователь не найден' });
@@ -484,15 +487,19 @@ export const reactToUser = async (req, res) => {
             ]
           });
 
-          await User.findByIdAndUpdate(
-              userId,
-              {$pull: {likedBy: targetUserId, superlikedBy: targetUserId}}
-          );
+          await User.findByIdAndUpdate(userIdObj, {
+            $pull: {
+              likedBy: targetUserIdObj,
+              superlikedBy: targetUserIdObj
+            }
+          });
 
-          await User.findByIdAndUpdate(
-              targetUserId,
-              {$pull: {likedBy: userId, superlikedBy: userId}}
-          );
+          await User.findByIdAndUpdate(targetUserIdObj, {
+            $pull: {
+              likedBy: userIdObj,
+              superlikedBy: userIdObj
+            }
+          });
 
           if (!existingMatch) {
             const match = new Match({person1Id: userId, person2Id: targetUserId, status: "match"});
@@ -529,15 +536,19 @@ export const reactToUser = async (req, res) => {
             ]
           });
 
-          await User.findByIdAndUpdate(
-              userId,
-              {$pull: {likedBy: targetUserId, superlikedBy: targetUserId}}
-          );
+          await User.findByIdAndUpdate(userIdObj, {
+            $pull: {
+              likedBy: targetUserIdObj,
+              superlikedBy: targetUserIdObj
+            }
+          });
 
-          await User.findByIdAndUpdate(
-              targetUserId,
-              {$pull: {likedBy: userId, superlikedBy: userId}}
-          );
+          await User.findByIdAndUpdate(targetUserIdObj, {
+            $pull: {
+              likedBy: userIdObj,
+              superlikedBy: userIdObj
+            }
+          });
 
           if (!existingMatch) {
             const match = new Match({ person1Id: userId, person2Id: targetUserId, status: "match" });
