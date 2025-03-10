@@ -360,7 +360,8 @@ export const getTopUsers = async (req, res) => {
     usersWithEngagement.sort((a, b) => b.engagement - a.engagement);
 
     // Оставляем только 10 пользователей
-    const finalUserList = usersWithEngagement.slice(0, 10);
+    // const finalUserList = usersWithEngagement.slice(0, 10);
+    const finalUserList = usersWithEngagement;
 
     // Генерация ссылок для изображений пользователей
     const ratedUsers = await Promise.all(
