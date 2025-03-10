@@ -240,9 +240,6 @@ export const uploadPhoto = async (req, res) => {
   }
 };
 
-
-
-
 export const getUserById = async (req, res) => {
   try {
     const user = await User.findOne({ _id: req.body.userId });
@@ -442,7 +439,7 @@ export const reactToUser = async (req, res) => {
   try {
     const { userId, targetUserId, action } = req.body;
 
-    if (!userId || !targetUserId || !['like', 'dislike'].includes(action)) {
+    if (!userId || !targetUserId || !['like', 'dislike', 'superlike'].includes(action)) {
       return res.status(400).json({ message: 'Некорректные данные' });
     }
 
@@ -456,6 +453,44 @@ export const reactToUser = async (req, res) => {
     }
 
     let isMatch = false;
+
+    if (action === 'superlike'){
+
+      //open chats
+      await User.findByIdAndUpdate(userId, { $addToSet: { chats: targetUserId } });
+      await User.findByIdAndUpdate(targetUserId, { $addToSet: { chats: userId } });
+
+      if (!user.likes.includes(targetUserId)) {
+
+        user.likes.push(targetUserId);
+        user.superlikes.push(targetUserId);
+        user.likesGiven += 1;
+        targetUser.likesReceived += 1;
+
+        // Добавляем userId в likedBy у targetUser
+        if (!targetUser.likedBy.includes(userId)) {
+          targetUser.likedBy.push(userId);
+          targetUser.superlikedBy.push(userId);
+        }
+
+        // Проверяем, лайкал ли targetUser этого пользователя (мэтч)
+        if (targetUser.likes.includes(userId)) {
+          isMatch = true;
+
+          const existingMatch = await Match.findOne({
+            $or: [
+              { person1Id: userId, person2Id: targetUserId },
+              { person1Id: targetUserId, person2Id: userId }
+            ]
+          });
+
+          if (!existingMatch) {
+            const match = new Match({ person1Id: userId, person2Id: targetUserId, status: "match" });
+            await match.save();
+          }
+        }
+
+    }
 
     if (action === 'like') {
       if (!user.likes.includes(targetUserId)) {
@@ -503,7 +538,7 @@ export const reactToUser = async (req, res) => {
       message: `Вы ${action === 'like' ? 'лайкнули' : 'дизлайкнули'} пользователя`,
       isMatch,
     });
-  } catch (err) {
+  }} catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Ошибка сервера' });
   }

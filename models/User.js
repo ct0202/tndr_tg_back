@@ -16,7 +16,8 @@ const UserSchema = new mongoose.Schema({
     photo2: String,
     photo3: String,
     city: String,
-    likedBy: { type: [mongoose.Schema.Types.ObjectId], ref: 'User', default: [] }, 
+    likedBy: { type: [mongoose.Schema.Types.ObjectId], ref: 'User', default: [] },
+    superlikedBy: { type: [mongoose.Schema.Types.ObjectId], ref: 'User', default: [] },
     about: {
         type: String,
         default: ""
@@ -31,6 +32,7 @@ const UserSchema = new mongoose.Schema({
     },
     likes: { type: [mongoose.Schema.Types.ObjectId], ref: 'User', default: [] },
     dislikes: { type: [mongoose.Schema.Types.ObjectId], ref: 'User', default: [] },
+    superlikes: {type: [mongoose.Schema.Types.ObjectId], ref: 'User', default: [] },
     telegramId: { type: Number, unique: true },
     likesReceived: { type: Number, default: 0 },
     dislikesReceived: { type: Number, default: 0 },
