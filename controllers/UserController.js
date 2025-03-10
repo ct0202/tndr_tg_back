@@ -484,19 +484,21 @@ export const reactToUser = async (req, res) => {
             ]
           });
 
+          await User.findByIdAndUpdate(
+              userId,
+              {$pull: {likedBy: targetUserId, superlikedBy: targetUserId}}
+          );
+
+          await User.findByIdAndUpdate(
+              targetUserId,
+              {$pull: {likedBy: userId, superlikedBy: userId}}
+          );
+
           if (!existingMatch) {
             const match = new Match({person1Id: userId, person2Id: targetUserId, status: "match"});
             await match.save();
 
-            await User.findByIdAndUpdate(
-                userId,
-                {$pull: {likedBy: targetUserId, superlikedBy: targetUserId}}
-            );
 
-            await User.findByIdAndUpdate(
-                targetUserId,
-                {$pull: {likedBy: userId, superlikedBy: userId}}
-            );
 
           }
         }
@@ -527,9 +529,21 @@ export const reactToUser = async (req, res) => {
             ]
           });
 
+          await User.findByIdAndUpdate(
+              userId,
+              {$pull: {likedBy: targetUserId, superlikedBy: targetUserId}}
+          );
+
+          await User.findByIdAndUpdate(
+              targetUserId,
+              {$pull: {likedBy: userId, superlikedBy: userId}}
+          );
+
           if (!existingMatch) {
             const match = new Match({ person1Id: userId, person2Id: targetUserId, status: "match" });
             await match.save();
+
+
           }
         }
 
