@@ -27,6 +27,52 @@ const s3 = new S3Client({
 });
 
 
+export const changeVisibility = async (req, res) => {
+  try {
+    // 1. Получаем данные из запроса
+    const { userId } = req.params; // Или из токена, если это текущий пользователь
+    const { hidden } = req.body;
+
+    // 2. Валидация входных данных
+    if (typeof hidden !== 'boolean') {
+      return res.status(400).json({
+        message: 'Некорректное значение hidden - должно быть boolean'
+      });
+    }
+
+    // 3. Поиск и обновление пользователя
+    const updatedUser = await User.findByIdAndUpdate(
+        userId,
+        { hidden },
+        { new: true }
+    );
+
+    // 4. Проверка существования пользователя
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'Пользователь не найден' });
+    }
+
+    // 5. Отправка успешного ответа
+    res.status(200).json({
+      message: `Пользователь успешно ${hidden ? 'скрыт' : 'показан'}`,
+      user: updatedUser
+    });
+
+  } catch (error) {
+    console.error('Ошибка при изменении статуса пользователя:', error);
+
+    // Обработка ошибки валидации ID
+    if (error.name === 'CastError') {
+      return res.status(400).json({ message: 'Некорректный ID пользователя' });
+    }
+
+    res.status(500).json({
+      message: 'Произошла ошибка на сервере',
+      error: error.message
+    });
+  }
+};
+
 export const register = async (req, res) => {
   try {
     // const newUser = new User({
@@ -307,7 +353,10 @@ export const getTopUsers = async (req, res) => {
     const currentYear = new Date().getFullYear();
 
     // Формируем запрос с учетом фильтров
-    let query = { _id: { $nin: Array.from(ratedUserIds) } };
+    let query = {
+      _id: { $nin: Array.from(ratedUserIds) },
+      hidden: { $ne: true }
+    };
 
     if (filters.age != null) {
       const minYear = currentYear - filters.age[1]; // Верхний возрастной порог (например, 38 → родился в 1986)

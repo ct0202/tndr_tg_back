@@ -44,6 +44,7 @@ app.post('/users/react', UserController.reactToUser);
 app.post('/users/getMatches', UserController.getUserMatches);
 app.get('/users/getChats/:id', UserController.getChats);
 app.post('/users/uploadPhoto', upload.single("photo"), UserController.uploadPhoto);
+app.patch('/users/:userId/hide', UserController.changeVisibility);
 
 app.post('/getMessages', ChatController.getMessages);
 app.post('/getLastMessage', ChatController.getLastMessage);
