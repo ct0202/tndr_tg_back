@@ -639,7 +639,7 @@ export const getLikedUsers = async (req, res) => {
     }
 
     // Получаем текущего пользователя для определения его местоположения
-    const currentUser = await User.findById(currentUserId).select("location dislikes");
+    const currentUser = await User.findById(currentUserId).select("location dislikes likes");
     if (!currentUser || !currentUser.location) {
       return res.status(404).json({ message: "Текущий пользователь не найден или без локации" });
     }
@@ -652,6 +652,12 @@ export const getLikedUsers = async (req, res) => {
     users = users.filter(user =>
         !(currentUser.dislikes || []).some(dislikeId =>
             dislikeId.equals(user._id)
+        )
+    );
+
+    users = users.filter(user =>
+        !(currentUser.likes || []).some(likeId =>
+            likeId.equals(user._id)
         )
     );
 
