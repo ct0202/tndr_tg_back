@@ -639,15 +639,25 @@ export const getLikedUsers = async (req, res) => {
     }
 
     // Получаем текущего пользователя для определения его местоположения
-    const currentUser = await User.findById(currentUserId).select("location");
+    const currentUser = await User.findById(currentUserId).select("location dislikes");
     if (!currentUser || !currentUser.location) {
       return res.status(404).json({ message: "Текущий пользователь не найден или без локации" });
     }
 
     const [curLat, curLon] = currentUser.location.split(",").map(Number);
 
-    // Получаем пользователей по ID
     let users = await User.find({ _id: { $in: userIds } });
+
+    // Фильтруем пользователей, которых текущий юзер дизлайкнул
+    users = users.filter(user =>
+        !(currentUser.dislikes || []).some(dislikeId =>
+            dislikeId.equals(user._id)
+        )
+    );
+
+
+    // Получаем пользователей по ID
+    // let users = await User.find({ _id: { $in: userIds } });
 
     if (users.length === 0) {
       return res.json([]);
