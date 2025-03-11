@@ -31,11 +31,11 @@ export const sendMessage = async (req, res) => {
 
         const [savedMessage] = await Promise.all([
             newMessage.save(),
-            User.findByIdAndUpdate(
-                senderId,
-                { $addToSet: { chats: receiverId } },
-                { new: true }
-            ).exec(),
+            // User.findByIdAndUpdate(
+            //     senderId,
+            //     { $addToSet: { chats: receiverId } },
+            //     { new: true }
+            // ).exec(),
             User.findByIdAndUpdate(
                 receiverId,
                 { $addToSet: { chats: senderId } },

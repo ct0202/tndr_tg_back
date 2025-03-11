@@ -509,7 +509,7 @@ export const reactToUser = async (req, res) => {
     if (action === 'superlike') {
 
       //open chats
-      await User.findByIdAndUpdate(userId, {$addToSet: {chats: targetUserId}});
+      // await User.findByIdAndUpdate(userId, {$addToSet: {chats: targetUserId}});
       await User.findByIdAndUpdate(targetUserId, {$addToSet: {chats: userId}});
 
       if (!user.likes.includes(targetUserId)) {
