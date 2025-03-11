@@ -447,8 +447,8 @@ export const reactToUser = async (req, res) => {
     const targetUser = await User.findById(targetUserId);
     const match = new Match({ person1Id: userId, person2Id: targetUserId });
 
-    const targetUserIdObj = mongoose.Types.ObjectId(targetUserId);
-    const userIdObj = mongoose.Types.ObjectId(userId);
+    const targetUserIdObj = new mongoose.Types.ObjectId(targetUserId);
+    const userIdObj = new mongoose.Types.ObjectId(userId);
 
 
     if (!user || !targetUser) {

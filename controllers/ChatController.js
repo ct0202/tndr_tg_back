@@ -20,6 +20,44 @@ export const saveMessage = async (senderId, receiverId, message) => {
     }
 };
 
+export const sendMessage = async (req, res) => {
+    try {
+        console.log(req.body);
+        const { senderId, receiverId, message } = req.body;
+
+        const newMessage = new Chat({
+            senderId, receiverId, message
+        });
+
+        const [savedMessage] = await Promise.all([
+            newMessage.save(),
+            User.findByIdAndUpdate(
+                senderId,
+                { $addToSet: { chats: receiverId } },
+                { new: true }
+            ).exec(),
+            User.findByIdAndUpdate(
+                receiverId,
+                { $addToSet: { chats: senderId } },
+                { new: true }
+            ).exec()
+        ]);
+
+        res.status(201).json({
+            success: true,
+            message: 'Сообщение успешно отправлено',
+        });
+
+    } catch (err) {
+        console.error('Ошибка при отправке сообщения:', err);
+        res.status(500).json({
+            success: false,
+            message: 'Внутренняя ошибка сервера',
+            error: process.env.NODE_ENV === 'development' ? err.message : undefined
+        });
+    }
+};
+
 
 export const getMessages = async (req, res) => {
     try {

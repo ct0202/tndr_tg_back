@@ -51,6 +51,8 @@ app.post('/getLastMessage', ChatController.getLastMessage);
 app.post('/getTelegramId', UserController.getTelegramId)
 app.post('/getLikedUsers', UserController.getLikedUsers)
 
+app.post('/send', ChatController.sendMessage);
+
 // 📌 WebSocket логика
 const users = {}; // Связь userId -> socketId
 
