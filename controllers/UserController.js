@@ -769,4 +769,78 @@ export const getUserMatches = async (req, res) => {
 // Multer Middleware Setup
 // const upload = multer({ storage: multer.memoryStorage() });
 
+export const getNotifications = async (req, res) => {
+  try {
+    const userId = req.params.userId;
 
+    // Получаем все relevant матчи
+    const matches = await Match.find({
+      $or: [
+        { person1Id: userId, status: 'match' },
+        { person2Id: userId, status: 'match' },
+        { person2Id: userId, status: 'waiting' }
+      ]
+    })
+        .sort({ createdAt: -1 })
+        .populate({
+          path: 'person1Id',
+          select: 'name photo1 city',
+          model: User
+        })
+        .populate({
+          path: 'person2Id',
+          select: 'name photo1 city',
+          model: User
+        });
+
+    // Форматируем в unified notifications
+    const notifications = await Promise.all(
+        matches.map(async (match) => {
+          const isLike = match.status === 'waiting';
+          const otherUser = match.person1Id._id.equals(userId)
+              ? match.person2Id
+              : match.person1Id;
+
+          // Получаем только первую фотографию
+          const firstPhotoKey = otherUser.photo1
+          console.log(firstPhotoKey);
+          let firstPhotoUrl = null;
+
+          if (firstPhotoKey) {
+            try {
+              const getObjectParams = {
+                Bucket: bucketName,
+                Key: firstPhotoKey,
+              };
+              const command = new GetObjectCommand(getObjectParams);
+              firstPhotoUrl = await getSignedUrl(s3, command, { expiresIn: 3600 });
+            } catch (error) {
+              console.error("Ошибка при генерации ссылки:", error);
+            }
+          }
+
+          return {
+            type: isLike ? 'like' : 'match',
+            user: {
+              _id: otherUser._id,
+              name: otherUser.name,
+              photos: firstPhotoUrl ? [firstPhotoUrl] : [],
+              city: otherUser.city
+            },
+            createdAt: match.createdAt,
+            matchId: match._id,
+            status: match.status
+          };
+        })
+    );
+
+    // Сортируем по времени (хотя уже отсортировано в запросе)
+    notifications.sort((a, b) => b.createdAt - a.createdAt);
+
+    res.status(200).json(notifications);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message || 'Error fetching notifications'
+    });
+  }
+};
