@@ -635,7 +635,7 @@ export const getLikedUsers = async (req, res) => {
     const { userIds, currentUserId } = req.body;
 
     if (!Array.isArray(userIds) || userIds.length === 0) {
-      return res.status(400).json({ message: "Некорректный список пользователей" });
+      return res.status(200).json({ message: "Некорректный список пользователей" });
     }
 
     // Получаем текущего пользователя для определения его местоположения
@@ -647,6 +647,11 @@ export const getLikedUsers = async (req, res) => {
     const [curLat, curLon] = currentUser.location.split(",").map(Number);
 
     let users = await User.find({ _id: { $in: userIds } });
+
+
+    if (users.length === 0) {
+      return res.json([]);
+    }
 
     // Фильтруем пользователей, которых текущий юзер дизлайкнул
     users = users.filter(user =>
