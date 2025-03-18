@@ -229,6 +229,49 @@ export const updateUserInfo = async (req, res) => {
 // };
 
 
+
+export const deletePhoto = async (req, res) => {
+  try {
+    const { userId } = req.query;
+    const index = Number(req.query.index);
+
+    if (!mongoose.Types.ObjectId.isValid(userId) || !Number.isInteger(index) || index < 0 || index > 2) {
+      return res.status(400).json({ error: "Некорректные параметры" });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "Пользователь не найден" });
+    }
+
+    const photoField = `photo${index + 1}`;
+    const imageName = user[photoField];
+
+    if (!imageName) {
+      return res.status(400).json({ error: "Фото не найдено" });
+    }
+
+    // Удаляем фото из S3
+    const deleteParams = {
+      Bucket: bucketName,
+      Key: imageName,
+    };
+
+    await s3.send(new DeleteObjectCommand(deleteParams));
+
+    // Обновляем пользователя, удаляя ссылку на фото
+    await User.updateOne(
+        { _id: userId },
+        { $unset: { [photoField]: "" } }
+    );
+
+    return res.json({ message: "Фото успешно удалено" });
+  } catch (error) {
+    console.error("Ошибка в deletePhoto:", error);
+    return res.status(500).json({ error: "Внутренняя ошибка сервера" });
+  }
+};
+
 export const uploadPhoto = async (req, res) => {
   try {
     const { userId } = req.query;
