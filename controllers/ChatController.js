@@ -82,8 +82,6 @@ export const getMessages = async (req, res) => {
             ]
         }).sort({ createdAt: 1 });
 
-        console.log("Найденные сообщения:", messages);
-
         res.json(messages);
     } catch (err) {
         console.error("Ошибка при получении сообщений:", err);
