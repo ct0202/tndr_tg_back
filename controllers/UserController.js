@@ -908,3 +908,62 @@ export const getNotifications = async (req, res) => {
     });
   }
 };
+
+export const givePremium = async (req, res) => {
+  try {
+    const { telegramId, duration } = req.body;
+    console.log("GIVE PREMIUM");
+    console.log(telegramId, duration);
+
+    if (!telegramId || !duration) {
+      return res.status(400).json({ message: "telegramId and duration are required." });
+    }
+
+    const user = await User.findOne({telegramId});
+    console.log("found user:",user);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    // Calculate expiration based on current or existing expiry
+    const now = new Date();
+    const currentExpiry = user.premium.expiresAt && user.premium.expiresAt > now
+      ? new Date(user.premium.expiresAt)
+      : now;
+
+    let durationMs;
+
+    switch (duration) {
+      case "week":
+        durationMs = 7 * 24 * 60 * 60 * 1000;
+        break;
+      case "month":
+        durationMs = 30 * 24 * 60 * 60 * 1000;
+        break;
+      case "3months":
+        durationMs = 90 * 24 * 60 * 60 * 1000;
+        break;
+      default:
+        return res.status(400).json({ message: "Invalid duration. Use 'week', 'month', or '3months'." });
+    }
+
+    console.log("duration cases passed", durationMs);
+
+    user.premium.isActive = true;
+    user.premium.expiresAt = new Date(currentExpiry.getTime() + durationMs);
+
+    await user.save();
+
+    console.log("user after save", user);
+
+    res.json({
+      message: `Premium activated for ${duration}`,
+      premium: user.premium
+    });
+
+  } catch (error) {
+    console.error("Failed to give premium:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+}

@@ -35,6 +35,7 @@ app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
 // 📌 Добавляем маршруты API
 app.post('/register', UserController.register);
+app.post('/users/givepremium', UserController.givePremium);
 app.post('/login', UserController.login);
 app.post('/updateUserInfo/:id', UserController.updateUserInfo);
 app.post('/auth/getUserById', UserController.getUserById);

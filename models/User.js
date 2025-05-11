@@ -47,6 +47,11 @@ const UserSchema = new mongoose.Schema({
     online: { type: Boolean, default: false },
     lastSeen: { type: Date, default: null },
 
+    premium: {
+        isActive: { type: Boolean, default: false },
+        expiresAt: { type: Date, default: null },
+    },
+
     //открытые чаты
     chats: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }]
 }, {
