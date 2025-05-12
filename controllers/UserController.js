@@ -272,118 +272,50 @@ export const deletePhoto = async (req, res) => {
   }
 };
 
-export const uploadPhoto = async (req, res) => {
-  try {
-    const { userId } = req.query;
-    const index = Number(req.query.index);
-    console.log("Old Method: index =", index);
-
-    if (!req.file) {
-      return res.status(400).json({ error: "Файл не загружен" });
-    }
-
-    console.log("Old Method: original file size =", req.file.size);
-
-    const user = await User.findById(userId);
-    if (!user) {
-      console.error("пользователь не найден");
-      return res.status(404).json({ error: "Пользователь не найден" });
-    }
-
-    const buffer = await sharp(req.file.buffer).toFormat("png").toBuffer();
-    console.log("Old Method: optimized PNG buffer size =", buffer.length);
-
-    const imageName = `${userId}_${Date.now()}_${index}`;
-
-    const params = {
-      Bucket: bucketName,
-      Key: imageName,
-      Body: buffer,
-      ContentType: "image/png",
-    };
-
-    await s3.send(new PutObjectCommand(params));
-
-    const photoField = `photo${index + 1}`;
-    user[photoField] = imageName;
-    console.log('Old Method: saving photo for userId =', user._id);
-    console.log('Old Method: photo field name =>', photoField);
-
-    await User.updateOne(
-        { _id: userId },
-        { $set: { [photoField]: imageName } }
-    );
-
-    const getObjectParams = { Bucket: bucketName, Key: imageName };
-    const resPhotoUrl = await getSignedUrl(s3, new GetObjectCommand(getObjectParams), { expiresIn: 3600 });
-
-    return res.json({ message: "Фото успешно загружено", user, photoUrl: resPhotoUrl });
-  } catch (error) {
-    console.error("Ошибка в uploadPhoto:", error);
-    return res.status(500).json({ error: "Внутренняя ошибка сервера" });
-  }
-};
-
-
 // export const uploadPhoto = async (req, res) => {
 //   try {
 //     const { userId } = req.query;
 //     const index = Number(req.query.index);
-
-//     console.log("New Method: Received upload request for userId:", userId, "with index:", index);
+//     console.log("Old Method: index =", index);
 
 //     if (!req.file) {
-//       console.warn("New Method: No file received in request");
 //       return res.status(400).json({ error: "Файл не загружен" });
 //     }
 
-//     console.log("New Method: original file size =", req.file.size, "File name:", req.file.originalname);
+//     console.log("Old Method: original file size =", req.file.size);
 
 //     const user = await User.findById(userId);
 //     if (!user) {
-//       console.error("New Method: Пользователь не найден для userId:", userId);
+//       console.error("пользователь не найден");
 //       return res.status(404).json({ error: "Пользователь не найден" });
 //     }
 
-//     console.log("New Method: Пользователь найден:", user._id);
+//     const buffer = await sharp(req.file.buffer).toFormat("png").toBuffer();
+//     console.log("Old Method: optimized PNG buffer size =", buffer.length);
 
-//     const buffer = await sharp(req.file.buffer)
-//       .resize({ width: 1080 })
-//       .webp({ quality: 50 })
-//       .toBuffer();
-
-//     console.log("New Method: optimized WebP buffer size =", buffer.length);
-
-//     const imageName = `${userId}_${Date.now()}_${index}.webp`;
-//     console.log("New Method: Generated image name:", imageName);
+//     const imageName = `${userId}_${Date.now()}_${index}`;
 
 //     const params = {
 //       Bucket: bucketName,
 //       Key: imageName,
 //       Body: buffer,
-//       ContentType: "image/webp",
+//       ContentType: "image/png",
 //     };
 
-//     console.log("New Method: Uploading to S3...");
 //     await s3.send(new PutObjectCommand(params));
-//     console.log("New Method: Upload successful");
 
 //     const photoField = `photo${index + 1}`;
 //     user[photoField] = imageName;
-
-//     console.log("New Method: Updating user document. Field:", photoField, "Value:", imageName);
+//     console.log('Old Method: saving photo for userId =', user._id);
+//     console.log('Old Method: photo field name =>', photoField);
 
 //     await User.updateOne(
-//       { _id: userId },
-//       { $set: { [photoField]: imageName } }
+//         { _id: userId },
+//         { $set: { [photoField]: imageName } }
 //     );
-
-//     console.log("New Method: User document updated");
 
 //     const getObjectParams = { Bucket: bucketName, Key: imageName };
 //     const resPhotoUrl = await getSignedUrl(s3, new GetObjectCommand(getObjectParams), { expiresIn: 3600 });
-
-//     console.log("New Method: Generated signed URL for photo:", resPhotoUrl);
 
 //     return res.json({ message: "Фото успешно загружено", user, photoUrl: resPhotoUrl });
 //   } catch (error) {
@@ -391,6 +323,74 @@ export const uploadPhoto = async (req, res) => {
 //     return res.status(500).json({ error: "Внутренняя ошибка сервера" });
 //   }
 // };
+
+
+export const uploadPhoto = async (req, res) => {
+  try {
+    const { userId } = req.query;
+    const index = Number(req.query.index);
+
+    console.log("New Method: Received upload request for userId:", userId, "with index:", index);
+
+    if (!req.file) {
+      console.warn("New Method: No file received in request");
+      return res.status(400).json({ error: "Файл не загружен" });
+    }
+
+    console.log("New Method: original file size =", req.file.size, "File name:", req.file.originalname);
+
+    const user = await User.findById(userId);
+    if (!user) {
+      console.error("New Method: Пользователь не найден для userId:", userId);
+      return res.status(404).json({ error: "Пользователь не найден" });
+    }
+
+    console.log("New Method: Пользователь найден:", user._id);
+
+    const buffer = await sharp(req.file.buffer)
+      .resize({ width: 1080 })
+      .webp({ quality: 50 })
+      .toBuffer();
+
+    console.log("New Method: optimized WebP buffer size =", buffer.length);
+
+    const imageName = `${userId}_${Date.now()}_${index}.webp`;
+    console.log("New Method: Generated image name:", imageName);
+
+    const params = {
+      Bucket: bucketName,
+      Key: imageName,
+      Body: buffer,
+      ContentType: "image/webp",
+    };
+
+    console.log("New Method: Uploading to S3...");
+    await s3.send(new PutObjectCommand(params));
+    console.log("New Method: Upload successful");
+
+    const photoField = `photo${index + 1}`;
+    user[photoField] = imageName;
+
+    console.log("New Method: Updating user document. Field:", photoField, "Value:", imageName);
+
+    await User.updateOne(
+      { _id: userId },
+      { $set: { [photoField]: imageName } }
+    );
+
+    console.log("New Method: User document updated");
+
+    const getObjectParams = { Bucket: bucketName, Key: imageName };
+    const resPhotoUrl = await getSignedUrl(s3, new GetObjectCommand(getObjectParams), { expiresIn: 3600 });
+
+    console.log("New Method: Generated signed URL for photo:", resPhotoUrl);
+
+    return res.json({ message: "Фото успешно загружено", user, photoUrl: resPhotoUrl });
+  } catch (error) {
+    console.error("Ошибка в uploadPhoto:", error);
+    return res.status(500).json({ error: "Внутренняя ошибка сервера" });
+  }
+};
 
 
 export const getUserById = async (req, res) => {
