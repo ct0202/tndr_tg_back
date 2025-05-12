@@ -272,55 +272,125 @@ export const deletePhoto = async (req, res) => {
   }
 };
 
+// export const uploadPhoto = async (req, res) => {
+//   try {
+//     const { userId } = req.query;
+//     const index = Number(req.query.index);
+//     console.log(index);
+
+//     // if (!mongoose.Types.ObjectId.isValid(userId) || !Number.isInteger(index) || index < 0 || index > 2) {
+//     //   return res.status(400).json({ error: "Некорректные параметры" });
+//     // }
+
+//     if (!req.file) {
+//       return res.status(400).json({ error: "Файл не загружен" });
+//     }
+
+//     const user = await User.findById(userId);
+//     if (!user) {
+//       console.error("пользователь не найден");
+//       return res.status(404).json({ error: "Пользователь не найден" });
+//     }
+
+//     // if (!user.telegramId) {
+//     //   return res.status(400).json({ error: "У пользователя отсутствует telegramId" });
+//     // }
+
+//     const buffer = await sharp(req.file.buffer).toFormat("png").toBuffer();
+//     const imageName = `${userId}_${Date.now()}_${index}`;
+
+//     const params = {
+//       Bucket: bucketName,
+//       Key: imageName,
+//       Body: buffer,
+//       // ContentType: req.file.mimetype,
+//       ContentType: "image/png",
+//     };
+
+//     await s3.send(new PutObjectCommand(params));
+
+//     // Обновляем пользователя
+//     const photoField = `photo${index + 1}`;
+//     user[photoField] = imageName;
+//     console.log('saving photo for: ', user);
+//     console.log('photo field name => ', photoField);
+//     const result = await User.updateOne(
+//         { _id: userId },
+//         { $set: { [photoField]: imageName } }
+//     );
+
+//     const getObjectParams = { Bucket: bucketName, Key: imageName };
+//     const resPhotoUrl = await getSignedUrl(s3, new GetObjectCommand(getObjectParams), { expiresIn: 3600 });
+
+//     return res.json({ message: "Фото успешно загружено", user, photoUrl: resPhotoUrl });
+//   } catch (error) {
+//     console.error("Ошибка в uploadPhoto:", error);
+//     return res.status(500).json({ error: "Внутренняя ошибка сервера" });
+//   }
+// };
+
 export const uploadPhoto = async (req, res) => {
   try {
     const { userId } = req.query;
     const index = Number(req.query.index);
-    console.log(index);
 
-    // if (!mongoose.Types.ObjectId.isValid(userId) || !Number.isInteger(index) || index < 0 || index > 2) {
-    //   return res.status(400).json({ error: "Некорректные параметры" });
-    // }
+    console.log("Received upload request for userId:", userId, "with index:", index);
 
     if (!req.file) {
+      console.warn("No file received in request");
       return res.status(400).json({ error: "Файл не загружен" });
     }
 
+    console.log("File received:", req.file.originalname, "Size:", req.file.size, "Mimetype:", req.file.mimetype);
+
     const user = await User.findById(userId);
     if (!user) {
-      console.error("пользователь не найден");
+      console.error("Пользователь не найден для userId:", userId);
       return res.status(404).json({ error: "Пользователь не найден" });
     }
 
-    // if (!user.telegramId) {
-    //   return res.status(400).json({ error: "У пользователя отсутствует telegramId" });
-    // }
+    console.log("Пользователь найден:", user._id);
 
-    const buffer = await sharp(req.file.buffer).toFormat("png").toBuffer();
-    const imageName = `${userId}_${Date.now()}_${index}`;
+    // Optimize image using sharp
+    console.log("Optimizing and converting image to WebP...");
+    const buffer = await sharp(req.file.buffer)
+      .resize({ width: 1080 }) // Optional resize
+      .webp({ quality: 50 })   // Compress
+      .toBuffer();
+
+    console.log("Image optimized. New buffer size:", buffer.length);
+
+    const imageName = `${userId}_${Date.now()}_${index}.webp`;
+    console.log("Generated image name:", imageName);
 
     const params = {
       Bucket: bucketName,
       Key: imageName,
       Body: buffer,
-      // ContentType: req.file.mimetype,
-      ContentType: "image/png",
+      ContentType: "image/webp",
     };
 
+    console.log("Uploading to S3...");
     await s3.send(new PutObjectCommand(params));
+    console.log("Upload successful");
 
     // Обновляем пользователя
     const photoField = `photo${index + 1}`;
     user[photoField] = imageName;
-    console.log('saving photo for: ', user);
-    console.log('photo field name => ', photoField);
-    const result = await User.updateOne(
-        { _id: userId },
-        { $set: { [photoField]: imageName } }
+
+    console.log("Updating user document. Field:", photoField, "Value:", imageName);
+
+    await User.updateOne(
+      { _id: userId },
+      { $set: { [photoField]: imageName } }
     );
+
+    console.log("User document updated");
 
     const getObjectParams = { Bucket: bucketName, Key: imageName };
     const resPhotoUrl = await getSignedUrl(s3, new GetObjectCommand(getObjectParams), { expiresIn: 3600 });
+
+    console.log("Generated signed URL for photo:", resPhotoUrl);
 
     return res.json({ message: "Фото успешно загружено", user, photoUrl: resPhotoUrl });
   } catch (error) {
@@ -328,6 +398,7 @@ export const uploadPhoto = async (req, res) => {
     return res.status(500).json({ error: "Внутренняя ошибка сервера" });
   }
 };
+
 
 export const getUserById = async (req, res) => {
   try {
