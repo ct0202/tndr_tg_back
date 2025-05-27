@@ -52,6 +52,7 @@ app.post('/getLastMessage', ChatController.getLastMessage);
 app.post('/getTelegramId', UserController.getTelegramId)
 app.post('/getLikedUsers', UserController.getLikedUsers)
 app.post('/send', ChatController.sendMessage);
+app.post('/createInvoiceLink', UserController.createInvoiceLink);
 
 const users = {};
 
