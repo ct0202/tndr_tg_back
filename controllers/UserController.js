@@ -1039,13 +1039,13 @@ export const createInvoiceLink = async (req, res) => {
     const { type } = req.body;
 
     const planMap = {
-      "2_weeks": {
+      "1_week": {
         title: "Подписка Премиум",
-        description: "14 дней подписки Премиум",
+        description: "7 дней подписки Премиум",
         priceRub: 200,
         amount: 20000,
-        label: "Подписка на 2 недели",
-        start_parameter: "premium14days"
+        label: "Подписка на неделю",
+        start_parameter: "premium7days"
       },
       "1_month": {
         title: "Подписка Премиум",
