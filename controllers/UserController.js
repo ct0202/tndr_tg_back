@@ -1074,36 +1074,39 @@ export const createInvoiceLink = async (req, res) => {
     const result = await axios.post(
       `https://api.telegram.org/bot8193869137:AAFifGJF9t66MPcU5d_DFWvbfAwmufnOhlU/createInvoiceLink`,
       {
-        title: plan.title,
-        description: plan.description,
-        payload: type,
+        title: "Подписка Премиум",
+        description: "7 дней подписки Премиум",
+        payload: "premium_7_days",
         provider_token: "390540012:LIVE:70096",
         currency: "RUB",
-        prices: [{ label: plan.label, amount: plan.amount }],
+        prices: [
+          { label: "Подписка на 2 недели", amount: 20000 }
+        ],
         need_email: true,
         send_email_to_provider: true,
         need_phone_number: true,
         send_phone_number_to_provider: true,
-        start_parameter: plan.start_parameter,
+        start_parameter: "premium7days",
         provider_data: JSON.stringify({
-          receipt: {
-            items: [
-              {
-                description: plan.label,
-                quantity: 1,
-                amount: {
-                  value: plan.priceRub,
-                  currency: "RUB"
-                },
-                vat_code: 1,
-                payment_mode: "full_payment",
-                payment_subject: "service"
-              }
-            ],
-            tax_system_code: 1
-          }
+            receipt: {
+                items: [
+                    {
+                    description: "Подписка на недел.",
+                    quantity: 1,
+                    amount: {
+                        value: 200, // в рублях, не копейках!
+                        currency: "RUB"
+                    },
+                    vat_code: 1,
+                    payment_mode: "full_payment",
+                    payment_subject: "service"
+                    }
+                ],
+                tax_system_code: 1
+            }
         })
-      }
+    }
+
     );
 
     res.status(200).json(result.data);
