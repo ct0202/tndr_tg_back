@@ -1073,8 +1073,9 @@ export const createInvoiceLink = async (req, res) => {
     }
 
     );
-    console.log("RESULT FROM AXIOS",result);
-    res.status(200).json(result);
+    console.log("RESULT FROM AXIOS",result.data);
+    res.status(200).json(result.data);
+
   } catch (error) {
     console.error("Failed to createInvoiceLink:", error);
     res.status(500).json({ message: "Server error" });
