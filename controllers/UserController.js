@@ -1000,13 +1000,13 @@ export const givePremium = async (req, res) => {
     let durationMs;
 
     switch (duration) {
-      case "week":
+      case "1_week":
         durationMs = 7 * 24 * 60 * 60 * 1000;
         break;
-      case "month":
+      case "1_month":
         durationMs = 30 * 24 * 60 * 60 * 1000;
         break;
-      case "3months":
+      case "3_months":
         durationMs = 90 * 24 * 60 * 60 * 1000;
         break;
       default:
