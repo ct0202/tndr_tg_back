@@ -1036,53 +1036,79 @@ export const givePremium = async (req, res) => {
 
 export const createInvoiceLink = async (req, res) => {
   try {
-    const result = await axios.post(
-    `https://api.telegram.org/bot8193869137:AAFifGJF9t66MPcU5d_DFWvbfAwmufnOhlU/createInvoiceLink`,
-    {
+    const { type } = req.body;
+
+    const planMap = {
+      "2_weeks": {
         title: "Подписка Премиум",
         description: "14 дней подписки Премиум",
-        payload: "premium_14_days",
+        priceRub: 200,
+        amount: 20000,
+        label: "Подписка на 2 недели",
+        start_parameter: "premium14days"
+      },
+      "1_month": {
+        title: "Подписка Премиум",
+        description: "1 месяц подписки Премиум",
+        priceRub: 500,
+        amount: 50000,
+        label: "Подписка на 1 месяц",
+        start_parameter: "premium1month"
+      },
+      "3_months": {
+        title: "Подписка Премиум",
+        description: "3 месяца подписки Премиум",
+        priceRub: 1200,
+        amount: 120000,
+        label: "Подписка на 3 месяца",
+        start_parameter: "premium3months"
+      }
+    };
+
+    const plan = planMap[type];
+
+    if (!plan) {
+      return res.status(400).json({ message: "Invalid subscription type." });
+    }
+
+    const result = await axios.post(
+      `https://api.telegram.org/bot8193869137:AAFifGJF9t66MPcU5d_DFWvbfAwmufnOhlU/createInvoiceLink`,
+      {
+        title: plan.title,
+        description: plan.description,
+        payload: type,
         provider_token: "390540012:LIVE:70096",
         currency: "RUB",
-        prices: [
-            { label: "Подписка на 2 недели", amount: 20000 },
-            
-            { label: "Подписка на 1 месяц", amount: 50000 },
-            
-            { label: "Подписка на 3 месяца", amount: 120000 }
-        ],
+        prices: [{ label: plan.label, amount: plan.amount }],
         need_email: true,
         send_email_to_provider: true,
         need_phone_number: true,
         send_phone_number_to_provider: true,
-        start_parameter: "premium14days",
+        start_parameter: plan.start_parameter,
         provider_data: JSON.stringify({
-            receipt: {
-                items: [
-                    {
-                    description: "Подписка на 2 недели",
-                    quantity: 1,
-                    amount: {
-                        value: 200, // в рублях, не копейках!
-                        currency: "RUB"
-                    },
-                    vat_code: 1,
-                    payment_mode: "full_payment",
-                    payment_subject: "service"
-                    }
-                ],
-                tax_system_code: 1
-            }
+          receipt: {
+            items: [
+              {
+                description: plan.label,
+                quantity: 1,
+                amount: {
+                  value: plan.priceRub,
+                  currency: "RUB"
+                },
+                vat_code: 1,
+                payment_mode: "full_payment",
+                payment_subject: "service"
+              }
+            ],
+            tax_system_code: 1
+          }
         })
-    }
-
+      }
     );
-    console.log("RESULT FROM AXIOS",result.data);
-    res.status(200).json(result.data);
 
+    res.status(200).json(result.data);
   } catch (error) {
     console.error("Failed to createInvoiceLink:", error);
     res.status(500).json({ message: "Server error" });
-    
   }
-}
+};
