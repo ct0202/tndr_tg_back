@@ -1045,7 +1045,11 @@ export const createInvoiceLink = async (req, res) => {
         provider_token: "390540012:LIVE:70096",
         currency: "RUB",
         prices: [
-            { label: "Подписка на 2 недели", amount: 20000 }
+            { label: "Подписка на 2 недели", amount: 20000 },
+            
+            { label: "Подписка на 1 месяц", amount: 50000 },
+            
+            { label: "Подписка на 3 месяца", amount: 120000 }
         ],
         need_email: true,
         send_email_to_provider: true,
