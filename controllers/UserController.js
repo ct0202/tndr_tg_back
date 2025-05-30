@@ -1077,10 +1077,6 @@ export const createInvoiceLink = async (req, res) => {
     const result = await axios.post(
       `https://api.telegram.org/bot8193869137:AAHPVzF7MoMnpXK73bYOptLZSUSKqPjiSZk/createInvoiceLink`,
       {
-        
-        subscription_period: plan.subscription_period,
-        recurring: true,
-        test:true,
         title: plan.title,
         description: plan.description,
         payload: type,
@@ -1091,28 +1087,29 @@ export const createInvoiceLink = async (req, res) => {
         send_email_to_provider: true,
         need_phone_number: true,
         send_phone_number_to_provider: true,
+        subscription_period: plan.subscription_period,
+        recurring: true,
+        test:true,
         start_parameter: plan.start_parameter,
         provider_data: JSON.stringify({
-            receipt: {
-            items: [
-              {
-                description: plan.label,
-                quantity: 1,
-                amount: {
-                  value: plan.priceRub,
-                  currency: "RUB"
-                },
-                vat_code: 1,
-                payment_mode: "full_payment",
-                payment_subject: "service"
-              }
-            ],
-            tax_system_code: 1
+          receipt: {
+          items: [
+            {
+            description: plan.label,
+            quantity: 1,
+            amount: {
+              value: plan.priceRub,
+              currency: "RUB"
+            },
+            vat_code: 1,
+            payment_mode: "full_payment",
+            payment_subject: "service"
+            }
+          ],
+          tax_system_code: 1
           }
         })
-    }
-
-    );
+      });
 
     res.status(200).json(result.data);
   } catch (error) {
