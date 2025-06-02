@@ -55,7 +55,7 @@ export const changeVisibility = async (req, res) => {
 
     // 5. Отправка успешного ответа
     res.status(200).json({
-      message: `Пользователь успешно ${hidden ? 'скрыт' : 'показан'}`,
+      message: `Ваш аккаунт ${hidden ? 'скрыт' : 'активен'}`,
       user: updatedUser
     });
 
