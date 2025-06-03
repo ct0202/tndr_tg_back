@@ -1117,3 +1117,18 @@ export const createInvoiceLink = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+export const deleteUser = async (req, res) => {
+  try {
+    const { telegramId } = req.body;
+    const db_res = await User.deleteOne({telegramId: telegramId});
+    if (db_res.deletedCount != 1){
+      res.status(404).json({message: "User not found."});
+    }
+    res.status(200).json({message: "User deleted successfully." });
+  }
+  catch (error) {
+    console.error("Failed to delete user:", error);
+    res.status(500).json({ message: "Server error. Failed to delete user:", error });
+  }
+}
