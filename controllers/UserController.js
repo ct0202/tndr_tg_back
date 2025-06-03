@@ -1132,3 +1132,19 @@ export const deleteUser = async (req, res) => {
     res.status(500).json({ message: "Server error. Failed to delete user:", error });
   }
 }
+
+export const activateUser = async (req, res) => {
+  try {
+    const {telegramId} = req.body;
+    const db_res = await User.updateOne({telegramId: telegramId});
+    if (db_res.updatedCount != 1) {
+      console.error("Failed to activate user:", error);
+      res.status(500).json({message: "Server error. Failed to activate user:", error});
+    }
+    res.status(200).json({message: "User activated successfully." });
+  }
+  catch (error) {
+    console.error("Failed to activate user:", error);
+    res.status(500).json({message: "Server error. Failed to activate user:", error});
+  }
+}
