@@ -153,6 +153,10 @@ export const login = async (req, res) => {
 export const updateUserInfo = async (req, res) => {
     try {
       const userId = req.params.id;
+
+      const activate =  req.body.activate;
+      console.log(activate);
+
   
       // Получаем текущего пользователя
       const user = await User.findById(userId);
@@ -175,6 +179,11 @@ export const updateUserInfo = async (req, res) => {
           updateData[field] = ''; // Или любое значение по умолчанию
         }
       });
+
+      if (activate && activate === true) {
+        updateData['activated'] = true;
+        console.log('update data with activate field  === > ', updateData);
+      }
   
       const updatedUser = await User.findByIdAndUpdate(
         userId,
@@ -1133,18 +1142,18 @@ export const deleteUser = async (req, res) => {
   }
 }
 
-export const activateUser = async (req, res) => {
-  try {
-    const {telegramId} = req.body;
-    const db_res = await User.updateOne({telegramId: telegramId});
-    if (db_res.updatedCount != 1) {
-      console.error("Failed to activate user:", error);
-      res.status(500).json({message: "Server error. Failed to activate user:", error});
-    }
-    res.status(200).json({message: "User activated successfully." });
-  }
-  catch (error) {
-    console.error("Failed to activate user:", error);
-    res.status(500).json({message: "Server error. Failed to activate user:", error});
-  }
-}
+// export const activateUser = async (req, res) => {
+//   try {
+//     const {telegramId} = req.body;
+//     const db_res = await User.updateOne({telegramId: telegramId});
+//     if (db_res.updatedCount != 1) {
+//       console.error("Failed to activate user:", error);
+//       res.status(500).json({message: "Server error. Failed to activate user:", error});
+//     }
+//     res.status(200).json({message: "User activated successfully." });
+//   }
+//   catch (error) {
+//     console.error("Failed to activate user:", error);
+//     res.status(500).json({message: "Server error. Failed to activate user:", error});
+//   }
+// }
