@@ -54,7 +54,6 @@ app.post('/getLikedUsers', UserController.getLikedUsers)
 app.post('/send', ChatController.sendMessage);
 app.post('/createInvoiceLink', UserController.createInvoiceLink);
 app.delete('/user', UserController.deleteUser);
-app.post('/activate', UserController.activateUser);
 
 const users = {};
 
