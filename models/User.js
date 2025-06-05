@@ -40,7 +40,7 @@ const UserSchema = new mongoose.Schema({
     userActivity: { type: Number, default: 0 },
     likesGiven: { type: Number, default: 0 },
     dislikesGiven: { type: Number, default: 0 },
-
+    activated: { type: Boolean, default: false},
     hidden: { type: Boolean, default: false },
 
     //активность юзера, данные из сокетов
