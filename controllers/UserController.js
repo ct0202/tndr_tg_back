@@ -37,8 +37,8 @@ export const createInvoiceLink = async (req, res) => {
       "1_week": {
       title: "Подписка Премиум",
       description: "7 дней подписки Премиум",
-      priceRub: 200,
-      amount: 20000,
+      priceRub: 10,
+      amount: 10,
       label: "Подписка на неделю",
       start_parameter: "premium7days",
       subscription_period: (7*24*3600)
@@ -46,8 +46,8 @@ export const createInvoiceLink = async (req, res) => {
       "1_month": {
       title: "Подписка Премиум",
       description: "1 месяц подписки Премиум",
-      priceRub: 500,
-      amount: 50000,
+      priceRub: 15,
+      amount: 15,
       label: "Подписка на 1 месяц",
       start_parameter: "premium1month",
       subscription_period: (30*24*3600)
@@ -55,8 +55,8 @@ export const createInvoiceLink = async (req, res) => {
       "3_months": {
       title: "Подписка Премиум",
       description: "3 месяца подписки Премиум",
-      priceRub: 1200,
-      amount: 120000,
+      priceRub: 25,
+      amount: 25,
       label: "Подписка на 3 месяца",
       start_parameter: "premium3months",
       subscription_period: (90*24*3600)
