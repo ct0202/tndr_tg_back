@@ -28,6 +28,91 @@ const s3 = new S3Client({
 });
 
 
+
+export const createInvoiceLink = async (req, res) => {
+  try {
+    const { type } = req.body;
+
+    const planMap = {
+      "1_week": {
+      title: "Подписка Премиум",
+      description: "7 дней подписки Премиум",
+      priceRub: 200,
+      amount: 20000,
+      label: "Подписка на неделю",
+      start_parameter: "premium7days",
+      subscription_period: (7*24*3600)
+      },
+      "1_month": {
+      title: "Подписка Премиум",
+      description: "1 месяц подписки Премиум",
+      priceRub: 500,
+      amount: 50000,
+      label: "Подписка на 1 месяц",
+      start_parameter: "premium1month",
+      subscription_period: (30*24*3600)
+      },
+      "3_months": {
+      title: "Подписка Премиум",
+      description: "3 месяца подписки Премиум",
+      priceRub: 1200,
+      amount: 120000,
+      label: "Подписка на 3 месяца",
+      start_parameter: "premium3months",
+      subscription_period: (90*24*3600)
+      }
+    };
+
+    const plan = planMap[type];
+
+    if (!plan) {
+      return res.status(400).json({ message: "Invalid subscription type." });
+    }
+
+    const result = await axios.post(
+      `https://api.telegram.org/bot8193869137:AAHPVzF7MoMnpXK73bYOptLZSUSKqPjiSZk/createInvoiceLink`,
+      {
+        title: plan.title,
+        description: plan.description,
+        payload: type,
+        provider_token: "390540012:LIVE:70096",
+        currency: "XTR",
+        prices: [{ label: plan.label, amount: plan.amount }],
+        need_email: true,
+        send_email_to_provider: true,
+        need_phone_number: true,
+        send_phone_number_to_provider: true,
+        subscription_period: plan.subscription_period,
+        recurring: true,
+        // test:true,
+        start_parameter: plan.start_parameter,
+        provider_data: JSON.stringify({
+          receipt: {
+          items: [
+            {
+            description: plan.label,
+            quantity: 1,
+            amount: {
+              value: plan.priceRub,
+              currency: "XTR"
+            },
+            vat_code: 1,
+            payment_mode: "full_payment",
+            payment_subject: "service"
+            }
+          ],
+          tax_system_code: 1
+          }
+        })
+      });
+
+    res.status(200).json(result.data);
+  } catch (error) {
+    console.error("Failed to createInvoiceLink:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 export const changeVisibility = async (req, res) => {
   try {
     // 1. Получаем данные из запроса
@@ -1043,89 +1128,6 @@ export const givePremium = async (req, res) => {
 }
 
 
-export const createInvoiceLink = async (req, res) => {
-  try {
-    const { type } = req.body;
-
-    const planMap = {
-      "1_week": {
-      title: "Подписка Премиум",
-      description: "7 дней подписки Премиум",
-      priceRub: 200,
-      amount: 20000,
-      label: "Подписка на неделю",
-      start_parameter: "premium7days",
-      subscription_period: (7*24*3600)
-      },
-      "1_month": {
-      title: "Подписка Премиум",
-      description: "1 месяц подписки Премиум",
-      priceRub: 500,
-      amount: 50000,
-      label: "Подписка на 1 месяц",
-      start_parameter: "premium1month",
-      subscription_period: (30*24*3600)
-      },
-      "3_months": {
-      title: "Подписка Премиум",
-      description: "3 месяца подписки Премиум",
-      priceRub: 1200,
-      amount: 120000,
-      label: "Подписка на 3 месяца",
-      start_parameter: "premium3months",
-      subscription_period: (90*24*3600)
-      }
-    };
-
-    const plan = planMap[type];
-
-    if (!plan) {
-      return res.status(400).json({ message: "Invalid subscription type." });
-    }
-
-    const result = await axios.post(
-      `https://api.telegram.org/bot8193869137:AAHPVzF7MoMnpXK73bYOptLZSUSKqPjiSZk/createInvoiceLink`,
-      {
-        title: plan.title,
-        description: plan.description,
-        payload: type,
-        provider_token: "390540012:LIVE:70096",
-        currency: "XTR",
-        prices: [{ label: plan.label, amount: plan.amount }],
-        need_email: true,
-        send_email_to_provider: true,
-        need_phone_number: true,
-        send_phone_number_to_provider: true,
-        subscription_period: plan.subscription_period,
-        recurring: true,
-        // test:true,
-        start_parameter: plan.start_parameter,
-        provider_data: JSON.stringify({
-          receipt: {
-          items: [
-            {
-            description: plan.label,
-            quantity: 1,
-            amount: {
-              value: plan.priceRub,
-              currency: "RUB"
-            },
-            vat_code: 1,
-            payment_mode: "full_payment",
-            payment_subject: "service"
-            }
-          ],
-          tax_system_code: 1
-          }
-        })
-      });
-
-    res.status(200).json(result.data);
-  } catch (error) {
-    console.error("Failed to createInvoiceLink:", error);
-    res.status(500).json({ message: "Server error" });
-  }
-};
 
 export const deleteUser = async (req, res) => {
   try {
