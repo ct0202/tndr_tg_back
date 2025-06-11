@@ -82,9 +82,9 @@ export const createInvoiceLink = async (req, res) => {
         send_email_to_provider: true,
         need_phone_number: true,
         send_phone_number_to_provider: true,
-        subscription_period: plan.subscription_period,
-        recurring: true,
-        // test:true,
+        // subscription_period: 30*24*60*60,
+        // recurring: true,
+        test:true,
         start_parameter: plan.start_parameter,
         provider_data: JSON.stringify({
           receipt: {
