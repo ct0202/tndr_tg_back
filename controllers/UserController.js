@@ -94,7 +94,7 @@ export const createInvoiceLink = async (req, res) => {
             quantity: 1,
             amount: {
               value: plan.priceRub,
-              currency: "XTR"
+              currency: "RUB"
             },
             vat_code: 1,
             payment_mode: "full_payment",
