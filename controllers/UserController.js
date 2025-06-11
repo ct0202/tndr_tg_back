@@ -75,7 +75,7 @@ export const createInvoiceLink = async (req, res) => {
         title: plan.title,
         description: plan.description,
         payload: type,
-        provider_token: "390540012:LIVE:70096",
+        // provider_token: "390540012:LIVE:70096",
         currency: "XTR",
         prices: [{ label: plan.label, amount: plan.amount }],
         need_email: true,
@@ -86,24 +86,24 @@ export const createInvoiceLink = async (req, res) => {
         // recurring: true,
         test:true,
         start_parameter: plan.start_parameter,
-        provider_data: JSON.stringify({
-          receipt: {
-          items: [
-            {
-            description: plan.label,
-            quantity: 1,
-            amount: {
-              value: plan.priceRub,
-              currency: "XTR"
-            },
-            vat_code: 1,
-            payment_mode: "full_payment",
-            payment_subject: "service"
-            }
-          ],
-          tax_system_code: 1
-          }
-        })
+        // provider_data: JSON.stringify({
+        //   receipt: {
+        //   items: [
+        //     {
+        //     description: plan.label,
+        //     quantity: 1,
+        //     amount: {
+        //       value: plan.priceRub,
+        //       currency: "XTR"
+        //     },
+        //     vat_code: 1,
+        //     payment_mode: "full_payment",
+        //     payment_subject: "service"
+        //     }
+        //   ],
+        //   tax_system_code: 1
+        //   }
+        // })
       });
 
     res.status(200).json(result.data);
