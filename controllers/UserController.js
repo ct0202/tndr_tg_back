@@ -75,7 +75,7 @@ export const createInvoiceLink = async (req, res) => {
         title: plan.title,
         description: plan.description,
         payload: type,
-        // provider_token: "390540012:LIVE:70096",
+        provider_token: "390540012:LIVE:70096",
         currency: "RUB",
         prices: [{ label: plan.label, amount: plan.amount }],
         need_email: true,
