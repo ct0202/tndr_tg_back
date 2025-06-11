@@ -37,8 +37,8 @@ export const createInvoiceLink = async (req, res) => {
       "1_week": {
       title: "Подписка Премиум",
       description: "7 дней подписки Премиум",
-      priceRub: 10,
-      amount: 10,
+      priceRub: 200,
+      amount: 20000,
       label: "Подписка на неделю",
       start_parameter: "premium7days",
       subscription_period: (7*24*3600)
@@ -46,8 +46,8 @@ export const createInvoiceLink = async (req, res) => {
       "1_month": {
       title: "Подписка Премиум",
       description: "1 месяц подписки Премиум",
-      priceRub: 15,
-      amount: 15,
+      priceRub: 500,
+      amount: 50000,
       label: "Подписка на 1 месяц",
       start_parameter: "premium1month",
       subscription_period: (30*24*3600)
@@ -55,8 +55,8 @@ export const createInvoiceLink = async (req, res) => {
       "3_months": {
       title: "Подписка Премиум",
       description: "3 месяца подписки Премиум",
-      priceRub: 25,
-      amount: 25,
+      priceRub: 1200,
+      amount: 120000,
       label: "Подписка на 3 месяца",
       start_parameter: "premium3months",
       subscription_period: (90*24*3600)
@@ -76,7 +76,7 @@ export const createInvoiceLink = async (req, res) => {
         description: plan.description,
         payload: type,
         // provider_token: "390540012:LIVE:70096",
-        currency: "XTR",
+        currency: "RUB",
         prices: [{ label: plan.label, amount: plan.amount }],
         need_email: true,
         send_email_to_provider: true,
@@ -84,26 +84,26 @@ export const createInvoiceLink = async (req, res) => {
         send_phone_number_to_provider: true,
         // subscription_period: 30*24*60*60,
         // recurring: true,
-        test:true,
+        // test:true,
         start_parameter: plan.start_parameter,
-        // provider_data: JSON.stringify({
-        //   receipt: {
-        //   items: [
-        //     {
-        //     description: plan.label,
-        //     quantity: 1,
-        //     amount: {
-        //       value: plan.priceRub,
-        //       currency: "XTR"
-        //     },
-        //     vat_code: 1,
-        //     payment_mode: "full_payment",
-        //     payment_subject: "service"
-        //     }
-        //   ],
-        //   tax_system_code: 1
-        //   }
-        // })
+        provider_data: JSON.stringify({
+          receipt: {
+          items: [
+            {
+            description: plan.label,
+            quantity: 1,
+            amount: {
+              value: plan.priceRub,
+              currency: "XTR"
+            },
+            vat_code: 1,
+            payment_mode: "full_payment",
+            payment_subject: "service"
+            }
+          ],
+          tax_system_code: 1
+          }
+        })
       });
 
     res.status(200).json(result.data);
