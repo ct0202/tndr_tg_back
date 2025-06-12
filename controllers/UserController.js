@@ -1153,7 +1153,7 @@ export const isPremium = async (req, res) => {
       return res.status(404).json({ message: "User not found." });
     }
     const now = new Date();
-    const isActive = user.premium.isActive && user.premium.expiresAt > now;
+    const isActive = user.premium.isActive;
     res.status(200).json({ isPremium: isActive, expiresAt: user.premium.expiresAt });
   }
   catch (error) {
