@@ -1147,6 +1147,7 @@ export const deleteUser = async (req, res) => {
 export const isPremium = async (req, res) => {
   try {
     const id = req.params;
+    console.log("isPremium id:", id);
     const user = await User.findById(id);
     if (!user) {
       return res.status(404).json({ message: "User not found." });
