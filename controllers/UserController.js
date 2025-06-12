@@ -1162,6 +1162,24 @@ export const isPremium = async (req, res) => {
   }
 }
 
+export const cancelPremium = async (req, res) => {
+  try {
+    const id = req.params;
+    console.log("cancelPremium id:", id);
+    const user = await User.findById(id.id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+    user.premium.isActive = false;
+    user.premium.expiresAt = null;
+    await user.save();
+    res.status(200).json({ message: "Premium subscription cancelled successfully." });
+  }
+  catch (error) {
+    console.error("Failed to cancel premium subscription:", error);
+    res.status(500).json({ message: "Server error. Failed to cancel premium subscription:", error });
+  }
+}
 // export const activateUser = async (req, res) => {
 //   try {
 //     const {telegramId} = req.body;
