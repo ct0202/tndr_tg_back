@@ -1144,6 +1144,23 @@ export const deleteUser = async (req, res) => {
   }
 }
 
+export const isPremium = async (req, res) => {
+  try {
+    const id = req.params;
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+    const now = new Date();
+    const isActive = user.premium.isActive && user.premium.expiresAt > now;
+    res.status(200).json({ isPremium: isActive, expiresAt: user.premium.expiresAt });
+  }
+  catch (error) {
+    console.error("Failed to check premium status:", error);
+    res.status(500).json({ message: "Server error. Failed to check premium status:", error });
+  }
+}
+
 // export const activateUser = async (req, res) => {
 //   try {
 //     const {telegramId} = req.body;
