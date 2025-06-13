@@ -1181,6 +1181,23 @@ export const cancelPremium = async (req, res) => {
     res.status(500).json({ message: "Server error. Failed to cancel premium subscription:", error });
   }
 }
+
+export const getInvitedCount = async (req, res) => {
+  try {
+    const id = req.params;
+    console.log("cancelPremium id:", id);
+    const user = await User.findById(id.id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+    const invitedCount = await User.countDocuments({ referral: id.id });
+    res.status(200).json({ invitedCount: invitedCount });
+  }
+  catch (error) {
+    console.error("Failed to get invited count:", error);
+    res.status(500).json({ message: "Server error. Failed to get invited count:", error });
+  }
+}
 // export const activateUser = async (req, res) => {
 //   try {
 //     const {telegramId} = req.body;

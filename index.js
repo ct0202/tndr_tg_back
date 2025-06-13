@@ -56,6 +56,7 @@ app.post('/createInvoiceLink', UserController.createInvoiceLink);
 app.delete('/user', UserController.deleteUser);
 app.get('/ispremium/:id', UserController.isPremium);
 app.post('/cancelpremium/:id', UserController.cancelPremium);
+app.get('/getInvitedCount/:id', UserController.getInvitedCount);
 
 const users = {};
 
