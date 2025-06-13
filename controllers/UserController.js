@@ -190,7 +190,8 @@ export const register = async (req, res) => {
           location: req.body.location,
           wantToFind: req.body.wantToFind,
           goal: req.body.goal,
-          city: req.body.city
+          city: req.body.city,
+          referal: req.body.referal || null,
         },
         { new: true, upsert: true } // new - возвращает обновленный объект, upsert - создает, если нет
     );

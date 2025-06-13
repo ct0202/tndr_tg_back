@@ -42,6 +42,7 @@ const UserSchema = new mongoose.Schema({
     dislikesGiven: { type: Number, default: 0 },
     activated: { type: Boolean, default: false},
     hidden: { type: Boolean, default: false },
+    referal: { type: String, default: null },
 
     //активность юзера, данные из сокетов
     online: { type: Boolean, default: false },
