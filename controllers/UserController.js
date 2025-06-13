@@ -226,7 +226,8 @@ export const login = async (req, res) => {
   
       // Генерация JWT
       const token = jwt.sign({ _id: user._id }, 'secret123', { expiresIn: '30d' });
-  
+      
+
       // Возвращаем данные пользователя без пароля
       const { password, ...userData } = user._doc;
       res.json({ token, ...userData });
@@ -253,7 +254,7 @@ export const updateUserInfo = async (req, res) => {
   
       // Формируем данные для обновления или добавления
       const updateData = {};
-      const updatableFields = ['name', 'gender', 'photo1', 'photo2', 'photo3', 'height', 'goal', 'location', 'about', 'city', 'birthDay', 'birthMonth', 'birthYear'];
+      const updatableFields = ['name', 'gender', 'photo1', 'photo2', 'photo3', 'height', 'goal', 'location', 'about', 'city', 'birthDay', 'birthMonth', 'birthYear', 'referal'];
   
       updatableFields.forEach((field) => {
         // Если параметр передан, обновляем его
@@ -511,6 +512,16 @@ export const getUserById = async (req, res) => {
           return url;
         })
     );
+
+    const invitedCount = await User.countDocuments({ referal: req.body.userId });
+    if (invitedCount == 3 && user.referalPremiumEnded !== true) {
+      let durationMs = 2 * 7 * 24 * 60 * 60 * 1000;
+      let expiresAt = new Date(Date.now() + durationMs);
+      user.premium.isActive = true;
+      user.premium.expiresAt = new Date(expiresAt.getTime() + durationMs);
+      user.referalPremiumEnded = true;
+      await user.save();
+    }
 
     user.photos = portfolioUrls;
     // console.log(portfolioUrls);

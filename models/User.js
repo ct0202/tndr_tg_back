@@ -43,6 +43,7 @@ const UserSchema = new mongoose.Schema({
     activated: { type: Boolean, default: false},
     hidden: { type: Boolean, default: false },
     referal: { type: String, default: null },
+    referalPremiumEnded: { type: Boolean, default: false },
 
     //активность юзера, данные из сокетов
     online: { type: Boolean, default: false },
