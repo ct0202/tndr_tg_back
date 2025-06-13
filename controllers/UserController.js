@@ -1191,6 +1191,7 @@ export const getInvitedCount = async (req, res) => {
       return res.status(404).json({ message: "User not found." });
     }
     const invitedCount = await User.countDocuments({ referral: id.id });
+    console.log("Invited count for user:", invitedCount, "userId:", id.id);
     res.status(200).json({ invitedCount: invitedCount });
   }
   catch (error) {
