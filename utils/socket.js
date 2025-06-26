@@ -9,6 +9,7 @@ let ioGlobal;
 export function sendNotificationToUser(userId, payload) {
     console.log("sendNotificationToUser", userId, payload);
     const user = users[userId];
+    console.log("Проверка юзера перед отправкой = ", user);
     if (user && ioGlobal) {
         console.log("Отправляю уведомление: ", user);
         ioGlobal.to(user.socketId).emit("notification", payload);
