@@ -19,6 +19,7 @@ export function sendNotificationToUser(userId, payload) {
 
 export default function setupSocket(server) {
     const io = new Server(server, { cors: { origin: "*" } });
+    ioGlobal = io;
 
     io.on("connection", (socket) => {
         console.log(`Пользователь подключен: ${socket.id}`);
