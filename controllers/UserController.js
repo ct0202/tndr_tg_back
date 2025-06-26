@@ -9,7 +9,7 @@ import mongoose from 'mongoose';
 import sharp from 'sharp';
 import dotenv from 'dotenv';
 import axios from 'axios';
-import { sendNotificationToUser } from '../utils/socket.js';
+import { sendNotificationToUser, getConnectedUsers } from '../utils/socket.js';
 
 dotenv.config();
 
@@ -817,6 +817,7 @@ export const reactToUser = async (req, res) => {
             const match = new Match({ person1Id: userId, person2Id: targetUserId, status: "match" });
             await match.save();
             console.log('Начало отправки уведомлений');
+            console.log("Проверка:", getConnectedUsers());
             sendNotificationToUser(userId, 'match!');
             sendNotificationToUser(targetUserId, 'match!');
           }

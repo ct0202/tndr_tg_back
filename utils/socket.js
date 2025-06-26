@@ -4,7 +4,11 @@ import * as ChatController from "../controllers/ChatController.js";
 
 const users = {}; // Связь userId -> socketId
 
-let ioGlobal;
+let ioGlobal = null;
+
+export function getConnectedUsers() {
+    return users;
+}
 
 export function sendNotificationToUser(userId, payload) {
     console.log("sendNotificationToUser", userId, payload);
