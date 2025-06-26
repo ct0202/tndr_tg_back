@@ -32,6 +32,7 @@ export default function setupSocket(server) {
 
         socket.on("joinChat", async (userId) => {
             users[userId] = { socketId: socket.id, online: true };
+            console.log("from joinChat, users: ", users);
 
             // Обновляем в БД статус пользователя
             await User.findByIdAndUpdate(userId, { online: true, lastSeen: new Date() });
