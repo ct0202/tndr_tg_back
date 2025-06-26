@@ -4,6 +4,19 @@ import * as ChatController from "../controllers/ChatController.js";
 
 const users = {}; // Связь userId -> socketId
 
+let ioGlobal;
+
+export function sendNotificationToUser(userId, payload) {
+    console.log("sendNotificationToUser", userId, payload);
+    const user = users[userId];
+    if (user && ioGlobal) {
+        console.log("Отправляю уведомление: ", user);
+        ioGlobal.to(user.socketId).emit("notification", payload);
+        return true;
+    }
+    return false;
+}
+
 export default function setupSocket(server) {
     const io = new Server(server, { cors: { origin: "*" } });
 
@@ -47,6 +60,14 @@ export default function setupSocket(server) {
                 }
             }
         });
+
+        socket.on("notification", ({ receiverId, payload }) => {
+            const receiverSocket = users[receiverId];
+
+            if (receiverSocket) {
+                io.to(receiverSocket.socketId).emit("notification", payload);
+            }
+        })
     });
 
     return io;

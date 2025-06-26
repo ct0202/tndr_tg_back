@@ -35,30 +35,35 @@ app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
 // 📌 Добавляем маршруты API
 app.post('/register', UserController.register);
-app.post('/users/givepremium', UserController.givePremium);
 app.post('/login', UserController.login);
+app.delete('/user', UserController.deleteUser);
+
+app.post('/users/givepremium', UserController.givePremium);
+app.post('/cancelpremium/:id', UserController.cancelPremium);
+app.get('/ispremium/:id', UserController.isPremium);
+app.get('/getInvitedCount/:id', UserController.getInvitedCount);
+app.post('/createInvoiceLink', UserController.createInvoiceLink);
+
+app.post('/getMessages', ChatController.getMessages);
+app.post('/getLastMessage', ChatController.getLastMessage);
+app.get('/users/getChats/:id', UserController.getChats);
+app.post('/send', ChatController.sendMessage);
+
 app.post('/updateUserInfo/:id', UserController.updateUserInfo);
 app.post('/auth/getUserById', UserController.getUserById);
+
 app.post('/users/getCandidates', UserController.getTopUsers);
 app.post('/users/react', UserController.reactToUser);
 app.post('/users/getMatches', UserController.getUserMatches);
-app.get('/users/getChats/:id', UserController.getChats);
+
 app.post('/users/uploadPhoto', upload.single("photo"), UserController.uploadPhoto);
 app.delete('/users/deletePhoto', UserController.deletePhoto);
+
 app.patch('/users/:userId/hide', UserController.changeVisibility);
 app.get('/users/:userId/notifications', UserController.getNotifications);
-app.post('/getMessages', ChatController.getMessages);
-app.post('/getLastMessage', ChatController.getLastMessage);
+
 app.post('/getTelegramId', UserController.getTelegramId)
 app.post('/getLikedUsers', UserController.getLikedUsers)
-app.post('/send', ChatController.sendMessage);
-app.post('/createInvoiceLink', UserController.createInvoiceLink);
-app.delete('/user', UserController.deleteUser);
-app.get('/ispremium/:id', UserController.isPremium);
-app.post('/cancelpremium/:id', UserController.cancelPremium);
-app.get('/getInvitedCount/:id', UserController.getInvitedCount);
-
-const users = {};
 
 const port = process.env.PORT || 3001;
 server.listen(port, () => console.log(successMsg(`Listening on port: ${port}`)));
