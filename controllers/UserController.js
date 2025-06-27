@@ -10,6 +10,7 @@ import sharp from 'sharp';
 import dotenv from 'dotenv';
 import axios from 'axios';
 import { sendNotificationToUser, getConnectedUsers } from '../utils/socket.js';
+import users from '../utils/usersMap.js';
 
 dotenv.config();
 

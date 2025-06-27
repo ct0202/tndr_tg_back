@@ -1,8 +1,9 @@
 import { Server } from "socket.io";
 import User from "../models/User.js";
 import * as ChatController from "../controllers/ChatController.js";
+import users from './usersMap.js';
 
-const users = {}; // Связь userId -> socketId
+// const users = {}; // Связь userId -> socketId
 
 let ioGlobal = null;
 
