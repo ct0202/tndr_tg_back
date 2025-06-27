@@ -11,6 +11,8 @@ export function getConnectedUsers() {
     return users;
 }
 
+
+
 export function sendNotificationToUser(userId, payload) {
     console.log("sendNotificationToUser", userId, payload);
     console.log("все подключенные юзеры: ", users, " ; искомый юзер: ", userId);

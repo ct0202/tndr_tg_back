@@ -9,6 +9,7 @@ import setupSocket from "./utils/socket.js"
 
 import * as UserController from './controllers/UserController.js';
 import * as ChatController from './controllers/ChatController.js';
+import * as TestController from './tests/testSocket.js';
 
 dotenv.config();
 
@@ -64,6 +65,8 @@ app.get('/users/:userId/notifications', UserController.getNotifications);
 
 app.post('/getTelegramId', UserController.getTelegramId)
 app.post('/getLikedUsers', UserController.getLikedUsers)
+
+// app.post('/testSocket', TestController.TestSocket);
 
 const port = process.env.PORT || 3001;
 server.listen(port, () => console.log(successMsg(`Listening on port: ${port}`)));
