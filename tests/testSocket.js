@@ -6,7 +6,7 @@ import {getConnectedUsers, sendNotificationToUser} from "../utils/socket.js";
 export const TestSocket = async (req, res) => {
     try {
         const userId = req.body.userId;
-        sendNotificationToUser(userId, 'match!');
+        sendNotificationToUser(userId, '68543cdba494c8ed9de1a1ad');
     }
     catch (err) {
         console.error(err);

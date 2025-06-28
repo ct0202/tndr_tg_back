@@ -66,7 +66,7 @@ app.get('/users/:userId/notifications', UserController.getNotifications);
 app.post('/getTelegramId', UserController.getTelegramId)
 app.post('/getLikedUsers', UserController.getLikedUsers)
 
-// app.post('/testSocket', TestController.TestSocket);
+app.post('/testSocket', TestController.TestSocket);
 
 const port = process.env.PORT || 3001;
 server.listen(port, () => console.log(successMsg(`Listening on port: ${port}`)));

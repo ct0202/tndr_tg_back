@@ -819,8 +819,8 @@ export const reactToUser = async (req, res) => {
             await match.save();
             console.log('Начало отправки уведомлений');
             console.log("Проверка:", getConnectedUsers());
-            sendNotificationToUser(userId, 'match!');
-            sendNotificationToUser(targetUserId, 'match!');
+            sendNotificationToUser(userId, targetUserId);
+            sendNotificationToUser(targetUserId, userId);
           }
         }
 
